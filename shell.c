@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <stdlib.h>
+#include <signal.h>
 
 #define MAX_TOKEN_LENGTH 50
 #define MAX_TOKEN_COUNT 100
@@ -21,6 +22,14 @@
  *   shell: exit
 **/
 
+void cnt(int sig) {
+  static int count = 0;
+  ++count;
+  if(count == 2){
+    exit(0);
+  }
+}
+
 void runcommand(char* command, char** args) {
   pid_t pid = fork();
   if(pid) { // parent
@@ -31,16 +40,18 @@ void runcommand(char* command, char** args) {
 }
 
 int main(){
+  signal(SIGTSTP, cnt); // Ctrl-Z handler
   char line[MAX_LINE_LENGTH];
-  while(fgets(line, MAX_LINE_LENGTH, stdin)) {
+  while(1) {
+    fgets(line, MAX_LINE_LENGTH, stdin);
   	// Build the command and arguments, using execv conventions.
   	line[strlen(line)-1] = '\0'; // get rid of the new line
   	char* command = NULL;
   	char* arguments[MAX_TOKEN_COUNT];
   	int argument_count = 0;
-
   	char* token = strtok(line, " ");
-  	while(token) {
+  	
+    while(token) {
   		if(!command) command = token;
   		arguments[argument_count] = token;
     	argument_count++;

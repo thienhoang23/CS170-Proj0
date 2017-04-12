@@ -3,16 +3,19 @@ CFLAGS  = -O
 LDFLAGS  = -O 
 
 
-all: simple 
+all: simple shell
 
 simple:  simple_shell.o
 	$(CC) -o $@ $^ $(LDFLAGS)
 
+shell:  shell.o
+	$(CC) -o $@ $^ $(LDFLAGS)
+
 run: 
-	./simple
+	./shell
 
 test: 
-	./simple < test/*
+	./shell < test/*
 
 clean:
 	rm simple
