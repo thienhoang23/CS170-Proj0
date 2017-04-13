@@ -3,10 +3,8 @@ CFLAGS  = -O
 LDFLAGS  = -O 
 
 
-all: simple shell
+all: shell
 
-simple:  simple_shell.o
-	$(CC) -o $@ $^ $(LDFLAGS)
 
 shell:  shell.o
 	$(CC) -o $@ $^ $(LDFLAGS)
@@ -15,7 +13,7 @@ run:
 	./shell
 
 test: 
-	./shell < test/*
+	./shell < ./test/*
 
 clean:
 	rm simple

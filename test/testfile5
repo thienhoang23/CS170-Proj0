@@ -1,0 +1,9 @@
+echo Hello > in1
+echo Hi > in2
+cat < in1
+cat < in2
+cat < in1 < in2
+echo Bonjour > in1 > in2
+cat < in1
+cat < in2
+exit

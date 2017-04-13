@@ -10,6 +10,6 @@ __TO DO__:
 	* Well defined, good test cases
 	* Faulty test cases
 * Collect exit codes from child processes
-* Handle unfound commands
+* Handle unfound commands, e.g. $hi
 * Handle stupid tokens, e.g. $>
-* Handle re-directing from non-existent input file
+* ~~Handle re-directing from non-existent input file~~
