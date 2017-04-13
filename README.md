@@ -12,3 +12,4 @@ __TO DO__:
 * Collect exit codes from child processes
 * Handle unfound commands
 * Handle stupid tokens, e.g. $>
+* Handle re-directing from non-existent input file
