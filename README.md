@@ -1,7 +1,9 @@
 # CS170-Proj0
 
 __TO DO__:
-* Add Pipelining and Metacharacters
+* Add Piping
+* ~~Add Output Redirection~~
+* ~~Add Input Redirection~~
 * ~~Exit when pressing Ctrl-Z twice~~
 * ~~Add shell compile rule to Makefile~~
 * Create more test cases
@@ -9,4 +11,4 @@ __TO DO__:
 	* Faulty test cases
 * Collect exit codes from child processes
 * Handle unfound commands
-* Handle error codes from executing commands
+* Handle stupid tokens, e.g. $>
