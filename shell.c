@@ -58,7 +58,7 @@ void print_fds(int* fds, int fds_len){
   printf("\n");
 }
 
-void runcommand(char** commands, char*** args_group, int num_commands, int* fds, int fds_len)
+void runcommand(char** commands, char* args_group[MAX_SUBCOMMANDS_COUNT][MAX_TOKEN_COUNT], int num_commands, int* fds, int fds_len)
 {
   int i; char* command; char** args; int in_fd; int out_fd;
   int child_process_ids[num_commands];
@@ -86,7 +86,6 @@ int openFile(char* file_handle, int type_of_file){
     fd = open(file_handle, O_RDONLY);
       if(fd < 0){ //File does not exist
         printf("shell: %s: No such file or directory\n", file_handle);
-        exit(1);
       }
   }
   else if(type_of_file == 1){
@@ -94,7 +93,6 @@ int openFile(char* file_handle, int type_of_file){
   }
   else{
     printf("Type_of_file: %d is not recognized.", type_of_file);
-    exit(1);
   }
   return fd;
 }
@@ -109,8 +107,7 @@ int main(){
   	char* commands[MAX_SUBCOMMANDS_COUNT]; char* command = NULL;
     char* file_handle; int pipe_fd[2];
     int fds[MAX_SUBCOMMANDS_COUNT*2]; fds[0] = 0; fds[1] = 1; int command_count = 0;
-  	char** arguments_group[MAX_SUBCOMMANDS_COUNT];
-    char* arguments[MAX_TOKEN_COUNT];
+  	char* arguments[MAX_SUBCOMMANDS_COUNT][MAX_TOKEN_COUNT];
   	int argument_count = 0;
     char* token = strtok(line, " ");
 
@@ -123,40 +120,35 @@ int main(){
       if(*token == '>'){ //OUTPUT REDIRECTION
         file_handle = strtok(NULL, " ");
         argument_count--;
-        token = arguments[argument_count];
+        token = arguments[command_count - 1][argument_count];
         fds[(command_count - 1)*2 + 1] = openFile(file_handle, 1);
       }
       if(*token == '<'){ //INPUT REDIRECTION
         file_handle = strtok(NULL, " ");
         argument_count--;
-        token = arguments[argument_count];
+        token = arguments[command_count - 1][argument_count];
         fds[(command_count - 1)*2] = openFile(file_handle, 0);
       }
       if(*token == '|'){ //Piping
         pipe(pipe_fd);
-        char** args;
-        args = (char **) malloc(MAX_TOKEN_COUNT * sizeof(char*));
         fds[(command_count - 1)*2 + 1] = pipe_fd[1];
         fds[(command_count - 1)*2 + 2] = pipe_fd[0];
         fds[(command_count - 1)*2 + 3] = 1;
-        arguments[argument_count] = NULL;
-        memcpy(args, arguments, sizeof arguments);
-        arguments_group[command_count - 1] = args;
+        arguments[command_count - 1][argument_count] = NULL;
         command = NULL;
         token = strtok(NULL, " ");
         argument_count = 0;
         continue;
       }
-      arguments[argument_count] = token;
+      arguments[command_count - 1][argument_count] = token;
       argument_count++;
   		token = strtok(NULL, " ");
   	}
-  	arguments[argument_count] = NULL;
-    arguments_group[command_count - 1] = arguments;
+  	arguments[command_count - 1][argument_count] = NULL;
     if(argument_count>0){
-      if (strcmp(arguments[0], "exit") == 0)
+      if (strcmp(arguments[command_count - 1][0], "exit") == 0)
         exit(0);
-      runcommand(commands, arguments_group, command_count, fds, command_count * 2);
+      runcommand(commands, arguments, command_count, fds, command_count * 2);
     }    
   }
   return 0;

@@ -1,7 +1,7 @@
 # CS170-Proj0
 
 __TO DO__:
-* Add Piping
+* ~~Add Piping~~
 * ~~Add Output Redirection~~
 * ~~Add Input Redirection~~
 * ~~Exit when pressing Ctrl-Z twice~~
