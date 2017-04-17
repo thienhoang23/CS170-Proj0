@@ -103,8 +103,7 @@ int openFile(char* file_handle, int type_of_file){
 int main(int argc, char *argv[]) {
   signal(SIGTSTP, cnt); // Ctrl-Z handler
   char line[MAX_LINE_LENGTH];
-  while(1) { //Taking input line by line
-    fgets(line, MAX_LINE_LENGTH, stdin);
+  while(fgets(line, MAX_LINE_LENGTH, stdin)) { //Taking input line by line
   	// Build the command and arguments, using execv conventions.
   	line[strlen(line)-1] = '\0'; // get rid of the new line
   	char* commands[MAX_SUBCOMMANDS_COUNT]; char* command = NULL;
