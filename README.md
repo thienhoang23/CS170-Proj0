@@ -9,7 +9,8 @@ __TO DO__:
 * Create more test cases
 	* Well defined, good test cases
 	* Faulty test cases
-* Collect exit codes from child processes
+* ~~Collect exit codes from child processes~~
+* Add Documentations/ Comments onto code
 * ~~Handle unfound commands, e.g. $hi~~
 * Handle stupid tokens, e.g. $>
 * ~~Handle re-directing from non-existent input file~~
