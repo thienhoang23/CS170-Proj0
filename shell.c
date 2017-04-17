@@ -46,7 +46,8 @@ int runsubcommand(char* command, char** args, int in_fd, int out_fd, int* fds, i
         close(fds[i]);
     }
     execvp(command, args);
-    return pid; //Avoid Compiler Error
+    perror(command);
+    exit(1);
   }
 }
 
@@ -74,7 +75,8 @@ void runcommand(char** commands, char* args_group[MAX_SUBCOMMANDS_COUNT][MAX_TOK
         close(fds[i]);
   }
   for(i = 0; i < num_commands; ++i){
-    waitpid(child_process_ids[i], NULL, 0);
+    int child_status;
+    waitpid(child_process_ids[i], &child_status, 0);
   }
 }
 
@@ -93,6 +95,7 @@ int openFile(char* file_handle, int type_of_file){
   }
   else{
     printf("Type_of_file: %d is not recognized.", type_of_file);
+    exit(1);
   }
   return fd;
 }
