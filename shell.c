@@ -100,7 +100,7 @@ int openFile(char* file_handle, int type_of_file){
   return fd;
 }
 
-int main(){
+int main(int argc, char *argv[]) {
   signal(SIGTSTP, cnt); // Ctrl-Z handler
   char line[MAX_LINE_LENGTH];
   while(1) { //Taking input line by line
