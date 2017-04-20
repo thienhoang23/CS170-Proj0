@@ -65,17 +65,17 @@ void print_fds(int* fds, int fds_len)
   printf("\n");
 }
 
-void runcommand(char** commands, char* arr_of_args[MAX_SUBCOMMANDS_COUNT][MAX_TOKEN_COUNT], int num_commands, int* fds, int fds_len)
+void runcommand(char** subcommands, char* arr_of_args[MAX_SUBCOMMANDS_COUNT][MAX_TOKEN_COUNT], int num_subcommands, int* fds, int fds_len)
 {
-  int i; char* command; char** args; int in_fd; int out_fd;
-  int child_process_ids[num_commands];
-  for(i = 0; i < num_commands; ++i){
+  int i; char* subcommand; char** args; int in_fd; int out_fd;
+  int child_process_ids[num_subcommands];
+  for(i = 0; i < num_subcommands; ++i){
     //Run child processes in the pipe concurrently
-    command = commands[i];
+    subcommand = subcommands[i];
     args = arr_of_args[i];
     in_fd = fds[i*2];
     out_fd = fds[i*2 + 1];
-    child_process_ids[i] = runsubcommand(command, args, in_fd, out_fd, fds, fds_len);
+    child_process_ids[i] = runsubcommand(subcommand, args, in_fd, out_fd, fds, fds_len);
   }
   for(i = 0; i < fds_len; ++i){
     //Close any fd that is not stdin or stdout
@@ -83,14 +83,14 @@ void runcommand(char** commands, char* arr_of_args[MAX_SUBCOMMANDS_COUNT][MAX_TO
     if(fds[i] != 0 && fds[i] != 1)
       close(fds[i]);
   }
-  for(i = 0; i < num_commands; ++i){
+  for(i = 0; i < num_subcommands; ++i){
     //Wait for each child process to finish and collect exit code
     int child_status;
     waitpid(child_process_ids[i], &child_status, 0);
   }
 }
 
-int runsubcommand(char* command, char** args, int in_fd, int out_fd, int* fds, int fds_len) 
+int runsubcommand(char* subcommand, char** args, int in_fd, int out_fd, int* fds, int fds_len) 
 {
   pid_t pid = fork();
   if(pid) { // parent
@@ -104,8 +104,8 @@ int runsubcommand(char* command, char** args, int in_fd, int out_fd, int* fds, i
       if(fds[i] != 0 && fds[i] != 1)
         close(fds[i]);
     }
-    execvp(command, args);
-    perror(command);
+    execvp(subcommand, args);
+    perror(subcommand);
     exit(1); //Pass error code back to parents.
   }
 }
@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
     int pipe_fd[2];
     int fds[MAX_SUBCOMMANDS_COUNT*2]; //Keep track of input and ouput redirection of each subcommand 
     fds[0] = 0; fds[1] = 1; 
-    int command_count = 0;
+    int subcommand_count = 0;
   	char* arguments[MAX_SUBCOMMANDS_COUNT][MAX_TOKEN_COUNT]; //Keep track of the arguments of each subcommand
   	int argument_count = 0;
     char* token = strtok(line, " ");
@@ -130,41 +130,41 @@ int main(int argc, char *argv[])
     while(token) { //Break a line down to tokens
   		if(!command){
         command = token;
-        subcommands[command_count] = command;
-        ++command_count;
+        subcommands[subcommand_count] = command;
+        ++subcommand_count;
       } 
       if(*token == '>'){ //OUTPUT REDIRECTION
         file_handle = strtok(NULL, " ");
         argument_count--;
-        token = arguments[command_count - 1][argument_count];
-        fds[(command_count - 1)*2 + 1] = openFile(file_handle, 1);
+        token = arguments[subcommand_count - 1][argument_count];
+        fds[(subcommand_count - 1)*2 + 1] = openFile(file_handle, 1);
       }
       if(*token == '<'){ //INPUT REDIRECTION
         file_handle = strtok(NULL, " ");
         argument_count--;
-        token = arguments[command_count - 1][argument_count];
-        fds[(command_count - 1)*2] = openFile(file_handle, 0);
+        token = arguments[subcommand_count - 1][argument_count];
+        fds[(subcommand_count - 1)*2] = openFile(file_handle, 0);
       }
       if(*token == '|'){ //Piping
         pipe(pipe_fd);
-        fds[(command_count - 1)*2 + 1] = pipe_fd[1];
-        fds[(command_count - 1)*2 + 2] = pipe_fd[0];
-        fds[(command_count - 1)*2 + 3] = 1;
-        arguments[command_count - 1][argument_count] = NULL;
+        fds[(subcommand_count - 1)*2 + 1] = pipe_fd[1];
+        fds[(subcommand_count - 1)*2 + 2] = pipe_fd[0];
+        fds[(subcommand_count - 1)*2 + 3] = 1;
+        arguments[subcommand_count - 1][argument_count] = NULL;
         command = NULL;
         token = strtok(NULL, " ");
         argument_count = 0;
         continue;
       }
-      arguments[command_count - 1][argument_count] = token;
+      arguments[subcommand_count - 1][argument_count] = token;
       argument_count++;
   		token = strtok(NULL, " ");
   	}
-  	arguments[command_count - 1][argument_count] = NULL;
+  	arguments[subcommand_count - 1][argument_count] = NULL;
     if(argument_count>0){
-      if (strcmp(arguments[command_count - 1][0], "exit") == 0)
+      if (strcmp(arguments[subcommand_count - 1][0], "exit") == 0)
         exit(0);
-      runcommand(subcommands, arguments, command_count, fds, command_count * 2);
+      runcommand(subcommands, arguments, subcommand_count, fds, subcommand_count * 2);
     }    
   }
   return 0;
