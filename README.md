@@ -6,11 +6,11 @@ __TO DO__:
 * ~~Add Input Redirection~~
 * ~~Exit when pressing Ctrl-Z twice~~
 * ~~Add shell compile rule to Makefile~~
-* Create more test cases
-	* Well defined, good test cases
-	* Faulty test cases
+* ~~Create more test cases~~
+	* ~~Well defined, good test cases~~
+	* ~~Faulty test cases~~
 * ~~Collect exit codes from child processes~~
-* Add Documentations/ Comments onto code
+* ~~Add Documentations/ Comments onto code~~
 * ~~Handle unfound commands, e.g. $hi~~
 * Handle stupid tokens, e.g. $>
 * ~~Handle re-directing from non-existent input file~~
